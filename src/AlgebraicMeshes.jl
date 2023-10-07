@@ -1,8 +1,8 @@
 module AlgebraicMeshes
 using DomainSets, StaticArrays
-import Base: in, ==, hash
-import DomainSets: cross
-export AlgebraicMesh, Segment, boundarycomponents, LineSegment, vertices, edges, elements
+import Base: in, ==, hash, issubset
+import DomainSets: cross, boundary
+export AlgebraicMesh, Segment, boundarycomponents, LineSegment, vertices, edges, elements, interioredges
 
 include("segments.jl")
 
@@ -21,16 +21,26 @@ end
 AlgebraicMesh{d}(comp::Tuple{AbstractVector{<:AbstractVector{T}},Vararg{Any}}) where {d,T} = AlgebraicMesh{d,T,typeof(comp)}(comp)
 
 # assume 2D for now
-AlgebraicMesh(elements::Vector) = AlgebraicMesh{2}(elements)
-function AlgebraicMesh{2}(elements::Vector)
+AlgebraicMesh(elements::AbstractVector{<:Domain{SVector{d,T}}}) where {d,T} = AlgebraicMesh{d}(elements)
+AlgebraicMesh{d}(elements::AbstractVector{E}) where {E,d} = AlgebraicMesh{d}(manifolddimension(E), elements)
+
+function AlgebraicMesh{d}(::Val{2}, elements::AbstractVector) where d
     edges = union(boundarycomponents.(elements)...)
     vertices = union(boundarycomponents.(edges)...)
-    AlgebraicMesh{2}((vertices,edges,elements))
+    AlgebraicMesh{d}((vertices,edges,elements))
+end
+
+function AlgebraicMesh{d}(::Val{1}, elements::AbstractVector) where d
+    vertices = union(boundarycomponents.(elements)...)
+    AlgebraicMesh{d}((vertices,elements))
 end
 
 vertices(m::AlgebraicMesh) = m.complex[1]
 edges(m::AlgebraicMesh) = m.complex[2]
-elements(m::AlgebraicMesh) = m.complex[3]
+elements(m::AlgebraicMesh) = m.complex[end]
+
+boundary(m::AlgebraicMesh) = AlgebraicMesh(filter(e -> count(t -> e ⊆ t, elements(m)) == 1, edges(m)))
+interioredges(m::AlgebraicMesh) = AlgebraicMesh(filter(e -> count(t -> e ⊆ t, elements(m)) == 2, edges(m)))
 
 in(x, m::AlgebraicMesh) = any(d -> x in d, elements(m))
 

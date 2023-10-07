@@ -1,3 +1,5 @@
+manifolddimension(::Type{<:Rectangle}) = Val(2)
+
 """
     LineSegment(a, b)
 
@@ -7,6 +9,8 @@ struct LineSegment{d,T} <: Domain{SVector{d,T}}
     a::SVector{d,T}
     b::SVector{d,T}
 end
+
+manifolddimension(::Type{<:LineSegment}) = Val(1)
 
 cross(d::ClosedInterval, y::Number) = LineSegment(SVector(d.left,y), SVector(d.right,y))
 cross(x::Number, d::ClosedInterval) = LineSegment(SVector(x, d.left), SVector(x, d.right))
@@ -18,6 +22,8 @@ hash(l::LineSegment) = hash((min(l.a[1],l.b[1]),max(l.a[1],l.b[1]),min(l.a[2],l.
 
 
 boundarycomponents(d::LineSegment) = [d.a,d.b]
+
+issubset(l::LineSegment, r::Rectangle) = l.a in r && l.b in r
 
 # boundary(::Rectangle) in DomainSets.jl is too complicated...
 # The following could be moved to DomainSets.jl in the future.
