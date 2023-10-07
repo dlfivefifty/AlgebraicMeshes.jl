@@ -20,7 +20,9 @@ end
 
 AlgebraicMesh{d}(comp::Tuple{AbstractVector{<:AbstractVector{T}},Vararg{Any}}) where {d,T} = AlgebraicMesh{d,T,typeof(comp)}(comp)
 
-# assume 2D for now
+AlgebraicMesh(comp::Tuple{AbstractVector{<:SVector{d}},Vararg{Any}}) where d = AlgebraicMesh{d}(comp)
+
+# assume 2D for now. Following constructors create closure 
 AlgebraicMesh(elements::AbstractVector{<:Domain{SVector{d,T}}}) where {d,T} = AlgebraicMesh{d}(elements)
 AlgebraicMesh{d}(elements::AbstractVector{E}) where {E,d} = AlgebraicMesh{d}(manifolddimension(E), elements)
 
@@ -40,7 +42,31 @@ edges(m::AlgebraicMesh) = m.complex[2]
 elements(m::AlgebraicMesh) = m.complex[end]
 
 boundary(m::AlgebraicMesh) = AlgebraicMesh(filter(e -> count(t -> e ⊆ t, elements(m)) == 1, edges(m)))
+
+"""
+   interioredges(m)
+
+returns all edges that are not in the boundary.
+"""
 interioredges(m::AlgebraicMesh) = AlgebraicMesh(filter(e -> count(t -> e ⊆ t, elements(m)) == 2, edges(m)))
+
+"""
+   interiorvertices(m)
+
+returns all verticies that are not in the boundary.
+"""
+function interiorvertices(m::AlgebraicMesh)
+    b = boundary(m)
+    filter(v -> v ∉ b, vertices(m))
+end
+
+
+"""
+   interior(m)
+
+returns a mesh with the boundary removed.
+"""
+interior(m::AlgebraicMesh) = AlgebraicMesh((interiorvertices(m), interioredges(m), elements(m)))
 
 in(x, m::AlgebraicMesh) = any(d -> x in d, elements(m))
 
