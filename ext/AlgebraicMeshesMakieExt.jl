@@ -1,5 +1,5 @@
 module AlgebraicMeshesMakieExt
-using AlgebraicMeshes, Makie
+using AlgebraicMeshes, Makie, StaticArrays
 using DomainSets: leftendpoint, rightendpoint, Rectangle
 import Base: convert
 

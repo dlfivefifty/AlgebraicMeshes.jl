@@ -1,3 +1,4 @@
+manifolddimension(::Type{<:SVector}) = Val(0)
 manifolddimension(::Type{<:Rectangle}) = Val(2)
 
 """
@@ -24,6 +25,13 @@ hash(l::LineSegment) = hash((min(l.a[1],l.b[1]),max(l.a[1],l.b[1]),min(l.a[2],l.
 boundarycomponents(d::LineSegment) = [d.a,d.b]
 
 issubset(l::LineSegment, r::Rectangle) = l.a in r && l.b in r
+issubset(x::SVector, l::LineSegment) = x in l
+function in(x::SVector{d}, l::LineSegment{d}) where d
+    x == l.a && return true
+    x == l.b && return true
+    rank([l.b-l.a x-l.a]) == 1 || return false
+    0 ≤ first(filter(!isnan,(x-l.a) ./ (l.b-l.a))) ≤ 1
+end
 
 # boundary(::Rectangle) in DomainSets.jl is too complicated...
 # The following could be moved to DomainSets.jl in the future.

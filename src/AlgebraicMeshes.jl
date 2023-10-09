@@ -1,5 +1,5 @@
 module AlgebraicMeshes
-using DomainSets, StaticArrays
+using DomainSets, StaticArrays, LinearAlgebra
 import Base: in, ==, hash, issubset
 import DomainSets: cross, boundary, interior
 export AlgebraicMesh, Segment, boundarycomponents, LineSegment, vertices, edges, elements, interioredges
@@ -24,24 +24,26 @@ AlgebraicMesh(comp::Tuple{AbstractVector{<:SVector{d}},Vararg{Any}}) where d = A
 
 # assume 2D for now. Following constructors create closure 
 AlgebraicMesh(elements::AbstractVector{<:Domain{SVector{d,T}}}) where {d,T} = AlgebraicMesh{d}(elements)
+AlgebraicMesh(elements::AbstractVector{<:SVector{d,T}}) where {d,T} = AlgebraicMesh{d}(elements)
 AlgebraicMesh{d}(elements::AbstractVector{E}) where {E,d} = AlgebraicMesh{d}(manifolddimension(E), elements)
 
-function AlgebraicMesh{d}(::Val{2}, elements::AbstractVector) where d
-    edges = union(boundarycomponents.(elements)...)
+function AlgebraicMesh{d}(::Val{2}, els::AbstractVector) where d
+    edges = union(boundarycomponents.(els)...)
     vertices = union(boundarycomponents.(edges)...)
-    AlgebraicMesh{d}((vertices,edges,elements))
+    AlgebraicMesh{d}((vertices,edges,els))
 end
 
-function AlgebraicMesh{d}(::Val{1}, elements::AbstractVector) where d
-    vertices = union(boundarycomponents.(elements)...)
-    AlgebraicMesh{d}((vertices,elements))
+function AlgebraicMesh{d}(::Val{1}, els::AbstractVector) where d
+    vertices = union!(vcat(boundarycomponents.(els)...))
+    AlgebraicMesh{d}((vertices,els))
 end
+AlgebraicMesh{d}(::Val{0}, els::AbstractVector) where d = AlgebraicMesh{d}((els,))
 
 vertices(m::AlgebraicMesh) = m.complex[1]
 edges(m::AlgebraicMesh) = m.complex[2]
 elements(m::AlgebraicMesh) = m.complex[end]
 
-boundary(m::AlgebraicMesh) = AlgebraicMesh(filter(e -> count(t -> e ⊆ t, elements(m)) == 1, edges(m)))
+boundary(m::AlgebraicMesh) = AlgebraicMesh(filter(e -> count(t -> e ⊆ t, elements(m)) == 1, m.complex[end-1]))
 
 """
    interioredges(m)
@@ -66,7 +68,8 @@ end
 
 returns a mesh with the boundary removed.
 """
-interior(m::AlgebraicMesh) = AlgebraicMesh((interiorvertices(m), interioredges(m), elements(m)))
+interior(m::AlgebraicMesh{d,T,<:NTuple{3,Any}}) where {d,T} = AlgebraicMesh((interiorvertices(m), interioredges(m), elements(m)))
+interior(m::AlgebraicMesh{d,T,<:NTuple{2,Any}}) where {d,T} = AlgebraicMesh((interiorvertices(m), elements(m)))
 
 in(x, m::AlgebraicMesh) = any(d -> x in d, elements(m))
 
