@@ -1,7 +1,7 @@
 module AlgebraicMeshes
 using DomainSets, StaticArrays
 import Base: in, ==, hash, issubset
-import DomainSets: cross, boundary
+import DomainSets: cross, boundary, interior
 export AlgebraicMesh, Segment, boundarycomponents, LineSegment, vertices, edges, elements, interioredges
 
 include("segments.jl")
@@ -56,7 +56,7 @@ interioredges(m::AlgebraicMesh) = AlgebraicMesh(filter(e -> count(t -> e ⊆ t, 
 returns all verticies that are not in the boundary.
 """
 function interiorvertices(m::AlgebraicMesh)
-    b = boundary(m)
+    b = vertices(boundary(m))
     filter(v -> v ∉ b, vertices(m))
 end
 
