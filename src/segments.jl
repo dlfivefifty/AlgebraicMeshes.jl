@@ -11,6 +11,8 @@ struct LineSegment{d,T} <: Domain{SVector{d,T}}
     b::SVector{d,T}
 end
 
+LineSegment(a::SVector{d,T}, b::SVector{d,V}) where {d,T,V} = LineSegment{d,float(promote_type(T,V))}(a, b)
+
 manifolddimension(::Type{<:LineSegment}) = Val(1)
 
 cross(d::ClosedInterval, y::Number) = LineSegment(SVector(d.left,y), SVector(d.right,y))
