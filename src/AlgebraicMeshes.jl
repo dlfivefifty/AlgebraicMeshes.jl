@@ -1,8 +1,8 @@
 module AlgebraicMeshes
 using DomainSets, StaticArrays, LinearAlgebra
-import Base: in, ==, hash, issubset
+import Base: in, ==, hash, issubset, first, last
 import DomainSets: cross, boundary, interior
-export AlgebraicMesh, Segment, boundarycomponents, LineSegment, vertices, edges, elements, interioredges
+export AlgebraicMesh, Segment, boundarycomponents, LineSegment, vertices, edges, elements, interioredges, neighborhood
 
 include("segments.jl")
 
@@ -72,5 +72,7 @@ interior(m::AlgebraicMesh{d,T,<:NTuple{3,Any}}) where {d,T} = AlgebraicMesh((int
 interior(m::AlgebraicMesh{d,T,<:NTuple{2,Any}}) where {d,T} = AlgebraicMesh((interiorvertices(m), elements(m)))
 
 in(x, m::AlgebraicMesh) = any(d -> x in d, elements(m))
+
+neighborhood(m::AlgebraicMesh, x) = AlgebraicMesh(map(c -> filter(e -> x ∈ e, c),   m.complex))
 
 end # module AlgebraicMeshes

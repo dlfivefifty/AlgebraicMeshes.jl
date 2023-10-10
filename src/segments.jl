@@ -9,9 +9,13 @@ is a line segment from two points in d-dimensions, without orientation.
 struct LineSegment{d,T} <: Domain{SVector{d,T}}
     a::SVector{d,T}
     b::SVector{d,T}
+    LineSegment{d,T}(a, b) where {d,T} = new{d,T}(convert(SVector{d,T},a), convert(SVector{d,T},b))
 end
 
 LineSegment(a::SVector{d,T}, b::SVector{d,V}) where {d,T,V} = LineSegment{d,float(promote_type(T,V))}(a, b)
+
+first(ℓ::LineSegment) = ℓ.a
+last(ℓ::LineSegment) = ℓ.b
 
 manifolddimension(::Type{<:LineSegment}) = Val(1)
 
