@@ -73,6 +73,6 @@ interior(m::AlgebraicMesh{d,T,<:NTuple{2,Any}}) where {d,T} = AlgebraicMesh((int
 
 in(x, m::AlgebraicMesh) = any(d -> x in d, elements(m))
 
-neighborhood(m::AlgebraicMesh, x) = AlgebraicMesh(map(c -> filter(e -> x ∈ e, c),   m.complex))
+neighborhood(m::AlgebraicMesh, x) = AlgebraicMesh(map(c -> filter(e -> x ⊆ e, c),   m.complex))
 
 end # module AlgebraicMeshes

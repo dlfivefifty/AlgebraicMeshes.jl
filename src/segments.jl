@@ -32,6 +32,7 @@ boundarycomponents(d::LineSegment) = [d.a,d.b]
 
 issubset(l::LineSegment, r::Rectangle) = l.a in r && l.b in r
 issubset(x::SVector, l::LineSegment) = x in l
+
 function in(x::SVector{d}, l::LineSegment{d}) where d
     x == l.a && return true
     x == l.b && return true
