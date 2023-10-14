@@ -24,13 +24,15 @@ Makie.plottype(a::AlgebraicMesh) = AlgebraicMeshPlot
 
 function _algebraicmeshplot!(sc, m::AlgebraicMesh{d,T,<:NTuple{3,Any}}) where {T,d}
     poly!(sc, convert.(Rect, elements(m)))
-    linesegments!(sc, reinterpret(SVector{2,Int}, edges(m)))
+    ed = edges(m)
+    linesegments!(sc, reinterpret(eltype(eltype(ed)), ed))
     scatter!(sc, vertices(m))
     sc
 end
 
 function _algebraicmeshplot!(sc, m::AlgebraicMesh{d,T,<:NTuple{2,Any}}) where {T,d}
-    linesegments!(sc, reinterpret(SVector{2,Int}, elements(m)))
+    el = elements(m)
+    linesegments!(sc, reinterpret(eltype(eltype(el)), el))
     scatter!(sc, vertices(m))
     sc
 end
