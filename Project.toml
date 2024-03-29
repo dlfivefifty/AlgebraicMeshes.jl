@@ -15,7 +15,7 @@ Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 AlgebraicMeshesMakieExt = "Makie"
 
 [compat]
-DomainSets = "0.6"
+DomainSets = "0.6, 0.7"
 Makie = "0.19"
 StaticArrays = "1"
 
