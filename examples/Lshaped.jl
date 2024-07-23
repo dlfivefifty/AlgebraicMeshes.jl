@@ -1,4 +1,4 @@
-using AlgebraicMeshes, DomainSets
+using AlgebraicMeshes, DomainSets, CairoMakie
 
 rects = [(0..1) × (1..2) , (0..1) × (0..1), (1..2) × (0..1)]
 mesh = AlgebraicMesh(rects)
