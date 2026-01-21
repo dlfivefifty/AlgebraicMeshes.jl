@@ -1,7 +1,7 @@
 name = "AlgebraicMeshes"
 uuid = "6f309771-d163-45c3-98c4-9f437ea4a81a"
-authors = ["Sheehan Olver <solver@mac.com>"]
 version = "0.0.1"
+authors = ["Sheehan Olver <solver@mac.com>"]
 
 [deps]
 DomainSets = "5b8099bc-c8ec-5219-889f-1d9e522a28bf"
@@ -16,7 +16,7 @@ AlgebraicMeshesMakieExt = "Makie"
 
 [compat]
 DomainSets = "0.6, 0.7"
-Makie = "0.19, 0.20"
+Makie = "0.19, 0.20, 0.24"
 StaticArrays = "1"
 
 [extras]
